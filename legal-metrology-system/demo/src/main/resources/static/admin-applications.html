@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Applications</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f6f8;
+        }
+
+        header {
+            background-color: #1f4e79;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        h2 {
+            color: #1f4e79;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            background-color: white;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #1f4e79;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #1f4e79;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #163a5c;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            header p {
+                font-size: 14px;
+            }
+
+            .container {
+                width: 90%;
+                margin: 25px auto;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            table {
+                min-width: 800px;
+            }
+
+            th,
+            td {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            button {
+                width: 100%;
+                padding: 13px;
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>Admin - Applications</h1>
+
+    <p>View Verification Applications</p>
+
+</header>
+
+
+<div class="container">
+
+    <h2>All Applications</h2>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Application ID</th>
+
+                    <th>Instrument ID</th>
+
+                    <th>Owner ID</th>
+
+                    <th>Application Date</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="applicationTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <p id="message"></p>
+
+
+    <button onclick="goBack()">
+
+        Back to Admin Dashboard
+
+    </button>
+
+
+</div>
+
+
+<script>
+
+
+function loadApplications() {
+
+    fetch("/applications")
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error("Unable to load applications");
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(applications => {
+
+            const table =
+                document.getElementById("applicationTable");
+
+            table.innerHTML = "";
+
+
+            if (applications.length === 0) {
+
+                document.getElementById("message").innerText =
+                    "No applications found.";
+
+                return;
+
+            }
+
+
+            applications.forEach(application => {
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>${application.id}</td>
+
+                    <td>${application.instrumentId}</td>
+
+                    <td>${application.ownerId}</td>
+
+                    <td>${application.applicationDate}</td>
+
+                    <td>${application.status}</td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("message").innerText =
+                "Unable to load applications.";
+
+        });
+
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "admin-dashboard.html";
+
+}
+
+
+loadApplications();
+
+
+</script>
+
+
+</body>
+
+</html>

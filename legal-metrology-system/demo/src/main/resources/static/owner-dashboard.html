@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Owner Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f6f8;
+        }
+
+        header {
+            background-color: #1f4e79;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        h2 {
+            color: #1f4e79;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: white;
+            width: 220px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        button {
+            background-color: #1f4e79;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #163a5c;
+        }
+
+
+        /* Mobile */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            header p {
+                font-size: 14px;
+            }
+
+            .container {
+                width: 90%;
+                margin: 25px auto;
+            }
+
+            .container > p {
+                line-height: 1.5;
+            }
+
+            .cards {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 350px;
+                padding: 20px;
+            }
+
+            button {
+                width: 100%;
+                padding: 13px;
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <header>
+
+        <h1>Owner Dashboard</h1>
+
+        <p>Legal Metrology Verification System</p>
+
+    </header>
+
+
+    <div class="container">
+
+        <h2>Welcome, Owner</h2>
+
+        <p>
+            Manage your instruments, verification applications
+            and certificates from here.
+        </p>
+
+
+        <div class="cards">
+
+
+            <!-- Register Instrument -->
+
+            <div class="card">
+
+                <h3>Register Instrument</h3>
+
+                <p>
+                    Register a new weighing or measuring instrument.
+                </p>
+
+                <button onclick="registerInstrument()">
+                    Register
+                </button>
+
+            </div>
+
+
+            <!-- Apply for Verification -->
+
+            <div class="card">
+
+                <h3>Apply for Verification</h3>
+
+                <p>
+                    Submit an instrument for verification.
+                </p>
+
+                <button onclick="applyVerification()">
+                    Apply
+                </button>
+
+            </div>
+
+
+            <!-- My Applications -->
+
+            <div class="card">
+
+                <h3>My Applications</h3>
+
+                <p>
+                    Check your verification applications.
+                </p>
+
+                <button onclick="viewApplications()">
+                    View
+                </button>
+
+            </div>
+
+
+            <!-- My Certificates -->
+
+            <div class="card">
+
+                <h3>My Certificates</h3>
+
+                <p>
+                    View your issued certificates.
+                </p>
+
+                <button onclick="viewCertificates()">
+                    View
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        function registerInstrument() {
+
+            window.location.href =
+                "register-instrument.html";
+
+        }
+
+
+        function applyVerification() {
+
+            window.location.href =
+                "verification-application.html";
+
+        }
+
+
+        function viewApplications() {
+
+            window.location.href =
+                "my-applications.html";
+
+        }
+
+
+        function viewCertificates() {
+
+            window.location.href =
+                "my-certificates.html";
+
+        }
+
+    </script>
+
+</body>
+
+</html>

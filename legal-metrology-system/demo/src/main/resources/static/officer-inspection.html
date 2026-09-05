@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Officer Inspection</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8;
+    }
+
+    header {
+        background-color: #1f4e79;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .container {
+        width: 85%;
+        max-width: 700px;
+        margin: 40px auto;
+    }
+
+    .box {
+        background-color: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    textarea {
+        height: 100px;
+        resize: vertical;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #1f4e79;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #163a5c;
+    }
+
+    #message {
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 15px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .box {
+            padding: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Instrument Inspection</h1>
+
+<p>Legal Metrology Verification System</p>
+
+</header>
+
+<div class="container">
+
+<h2>Record Inspection</h2>
+
+<div class="box">
+
+    <label for="applicationId">
+        Application ID
+    </label>
+
+    <input
+        type="number"
+        id="applicationId"
+        placeholder="Enter Application ID"
+    >
+
+    <label for="inspectionDate">
+        Inspection Date
+    </label>
+
+    <input
+        type="date"
+        id="inspectionDate"
+    >
+
+    <label for="result">
+        Inspection Result
+    </label>
+
+    <select id="result">
+
+        <option value="">
+            Select Result
+        </option>
+
+        <option value="PASS">
+            PASS
+        </option>
+
+        <option value="FAIL">
+            FAIL
+        </option>
+
+    </select>
+
+    <label for="remarks">
+        Remarks
+    </label>
+
+    <textarea
+        id="remarks"
+        placeholder="Enter inspection remarks"
+    ></textarea>
+
+    <button onclick="submitInspection()">
+        Submit Inspection
+    </button>
+
+    <p id="message"></p>
+
+</div>
+
+<br>
+
+<button onclick="goBack()">
+    Back to Officer Dashboard
+</button>
+
+</div>
+
+<script>
+
+// Get Application ID from URL
+
+const urlParams =
+    new URLSearchParams(window.location.search);
+
+const applicationId =
+    urlParams.get("applicationId");
+
+
+// Automatically fill Application ID
+
+if (applicationId) {
+
+    document.getElementById("applicationId").value =
+        applicationId;
+
+}
+
+
+function submitInspection() {
+
+    const applicationId =
+        document.getElementById("applicationId").value;
+
+    const inspectionDate =
+        document.getElementById("inspectionDate").value;
+
+    const result =
+        document.getElementById("result").value;
+
+    const remarks =
+        document.getElementById("remarks").value;
+
+
+    if (
+        applicationId === "" ||
+        inspectionDate === "" ||
+        result === "" ||
+        remarks === ""
+    ) {
+
+        document.getElementById("message").innerText =
+            "Please fill all fields.";
+
+        document.getElementById("message").style.color =
+            "red";
+
+        return;
+    }
+
+
+    const inspection = {
+
+        applicationId: Number(applicationId),
+
+        inspectionDate: inspectionDate,
+
+        result: result,
+
+        remarks: remarks
+
+    };
+
+
+    fetch("/inspections", {
+
+        method: "POST",
+
+        headers: {
+
+            "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify(inspection)
+
+    })
+
+    .then(response => {
+
+        if (!response.ok) {
+
+            throw new Error("Inspection failed");
+
+        }
+
+        return response.json();
+
+    })
+
+    .then(data => {
+
+        document.getElementById("message").innerText =
+            "Inspection submitted successfully! ID: "
+            + data.id;
+
+        document.getElementById("message").style.color =
+            "green";
+
+    })
+
+    .catch(error => {
+
+        document.getElementById("message").innerText =
+            "Unable to submit inspection.";
+
+        document.getElementById("message").style.color =
+            "red";
+
+    });
+
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "officer-dashboard.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

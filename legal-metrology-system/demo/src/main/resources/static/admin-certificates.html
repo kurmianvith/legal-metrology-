@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin - Certificates</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8;
+    }
+
+    header {
+        background-color: #1f4e79;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    header p {
+        margin-bottom: 0;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 40px auto;
+    }
+
+    h2 {
+        color: #1f4e79;
+    }
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        min-width: 1000px;
+        border-collapse: collapse;
+        background-color: white;
+        margin-top: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    th,
+    td {
+        padding: 15px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    th {
+        background-color: #1f4e79;
+        color: white;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    #message {
+        margin-top: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    button {
+        background-color: #1f4e79;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+
+    button:hover {
+        background-color: #163a5c;
+    }
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 15px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        h2 {
+            font-size: 22px;
+        }
+
+        table {
+            min-width: 1000px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Admin - Certificates</h1>
+
+<p>View Issued Certificates</p>
+
+</header>
+
+<div class="container">
+
+<h2>All Certificates</h2>
+
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Certificate ID</th>
+
+                <th>Application ID</th>
+
+                <th>Instrument ID</th>
+
+                <th>Certificate Number</th>
+
+                <th>Verification Date</th>
+
+                <th>Valid Until</th>
+
+                <th>Status</th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="certificateTable">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<p id="message"></p>
+
+
+<button onclick="goBack()">
+
+    Back to Admin Dashboard
+
+</button>
+
+</div>
+
+<script>
+
+
+function loadCertificates() {
+
+    fetch("/certificates")
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error("Unable to load certificates");
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(certificates => {
+
+            const table =
+                document.getElementById("certificateTable");
+
+            table.innerHTML = "";
+
+
+            if (certificates.length === 0) {
+
+                document.getElementById("message").innerText =
+                    "No certificates found.";
+
+                return;
+
+            }
+
+
+            certificates.forEach(certificate => {
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>${certificate.id}</td>
+
+                    <td>${certificate.applicationId}</td>
+
+                    <td>${certificate.instrumentId}</td>
+
+                    <td>${certificate.certificateNumber}</td>
+
+                    <td>${certificate.verificationDate}</td>
+
+                    <td>${certificate.validUntil}</td>
+
+                    <td>${certificate.status}</td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("message").innerText =
+                "Unable to load certificates.";
+
+        });
+
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "admin-dashboard.html";
+
+}
+
+
+loadCertificates();
+
+
+</script>
+
+</body>
+
+</html>

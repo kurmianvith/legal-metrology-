@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Applications</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8;
+    }
+
+    header {
+        background-color: #1f4e79;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    header p {
+        margin-bottom: 0;
+    }
+
+    .container {
+        width: 85%;
+        max-width: 1000px;
+        margin: 40px auto;
+    }
+
+    h2 {
+        color: #1f4e79;
+    }
+
+    .application {
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .application h3 {
+        margin-top: 0;
+    }
+
+    button {
+        padding: 10px 20px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+    }
+
+    .approve {
+        background-color: green;
+    }
+
+    .reject {
+        background-color: red;
+    }
+
+    .back {
+        background-color: #1f4e79;
+        margin-top: 20px;
+    }
+
+    #message {
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 15px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .container h2 {
+            font-size: 22px;
+        }
+
+        .application {
+            padding: 18px;
+        }
+
+        .application h3 {
+            font-size: 18px;
+        }
+
+        .application p {
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-right: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .back {
+            margin-top: 10px;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+<header>
+    <h1>Manage Applications</h1>
+    <p>Legal Metrology Verification System</p>
+</header>
+
+<div class="container">
+
+<h2>Verification Applications</h2>
+
+<div id="applications">
+    Loading applications...
+</div>
+
+<p id="message"></p>
+
+<button class="back" onclick="goBack()">
+    Back to Officer Dashboard
+</button>
+
+</div>
+
+<script>
+
+function loadApplications() {
+
+    fetch("/applications")
+        .then(response => response.json())
+        .then(applications => {
+
+            const container =
+                document.getElementById("applications");
+
+            container.innerHTML = "";
+
+            if (applications.length === 0) {
+
+                container.innerHTML =
+                    "<p>No applications found.</p>";
+
+                return;
+            }
+
+            applications.forEach(application => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "application";
+
+                div.innerHTML = `
+                    <h3>Application ID: ${application.id}</h3>
+
+                    <p>
+                        Instrument ID:
+                        ${application.instrumentId}
+                    </p>
+
+                    <p>
+                        Owner ID:
+                        ${application.ownerId}
+                    </p>
+
+                    <p>
+                        Application Date:
+                        ${application.applicationDate}
+                    </p>
+
+                    <p>
+                        Status:
+                        <strong>${application.status}</strong>
+                    </p>
+
+                    <button
+                        class="approve"
+                        onclick="approveApplication(${application.id})">
+                        Approve
+                    </button>
+
+                    <button
+                        class="reject"
+                        onclick="rejectApplication(${application.id})">
+                        Reject
+                    </button>
+                `;
+
+                container.appendChild(div);
+
+            });
+
+        })
+        .catch(error => {
+
+            document.getElementById("applications").innerText =
+                "Unable to load applications.";
+
+        });
+}
+
+
+function approveApplication(id) {
+
+    fetch("/applications/" + id + "/approve", {
+        method: "PUT"
+    })
+    .then(response => response.json())
+    .then(result => {
+
+        document.getElementById("message").innerText =
+            "Application approved successfully!";
+
+        loadApplications();
+
+    });
+}
+
+
+function rejectApplication(id) {
+
+    fetch("/applications/" + id + "/reject", {
+        method: "PUT"
+    })
+    .then(response => response.json())
+    .then(result => {
+
+        document.getElementById("message").innerText =
+            "Application rejected successfully!";
+
+        loadApplications();
+
+    });
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "officer-dashboard.html";
+
+}
+
+
+loadApplications();
+
+</script>
+
+</body>
+</html>

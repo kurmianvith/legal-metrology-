@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Applications</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8;
+    }
+
+    header {
+        background-color: #1f4e79;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .container {
+        width: 85%;
+        max-width: 1000px;
+        margin: 40px auto;
+    }
+
+    h2 {
+        color: #1f4e79;
+    }
+
+    .box {
+        background-color: white;
+        padding: 20px;
+        width: 400px;
+        max-width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #1f4e79;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #163a5c;
+    }
+
+    .application {
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .application h3 {
+        color: #1f4e79;
+        margin-top: 0;
+    }
+
+    #message {
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 15px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .box {
+            width: 100%;
+            padding: 20px;
+        }
+
+        input {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+        .application {
+            padding: 18px;
+        }
+
+        .application p {
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>My Applications</h1>
+
+<p>Legal Metrology Verification System</p>
+
+</header>
+
+<div class="container">
+
+<h2>Find My Applications</h2>
+
+<div class="box">
+
+    <input
+        type="number"
+        id="ownerId"
+        placeholder="Enter Owner ID">
+
+    <button onclick="loadApplications()">
+        View My Applications
+    </button>
+
+    <p id="message"></p>
+
+</div>
+
+<div id="applications">
+    Enter your Owner ID to view applications.
+</div>
+
+<button onclick="goBack()">
+    Back to Owner Dashboard
+</button>
+
+</div>
+
+<script>
+
+function loadApplications() {
+
+    const ownerId =
+        document.getElementById("ownerId").value;
+
+    if (ownerId === "") {
+
+        document.getElementById("message").innerText =
+            "Please enter Owner ID.";
+
+        return;
+    }
+
+    fetch("/applications")
+
+        .then(response => response.json())
+
+        .then(applications => {
+
+            const container =
+                document.getElementById("applications");
+
+            container.innerHTML = "";
+
+            const myApplications =
+                applications.filter(
+                    application =>
+                    application.ownerId == Number(ownerId)
+                );
+
+            if (myApplications.length === 0) {
+
+                container.innerHTML =
+                    "<p>No applications found for this Owner ID.</p>";
+
+                return;
+            }
+
+            myApplications.forEach(application => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "application";
+
+                div.innerHTML = `
+
+                    <h3>
+                        Application ID:
+                        ${application.id}
+                    </h3>
+
+                    <p>
+                        Instrument ID:
+                        ${application.instrumentId}
+                    </p>
+
+                    <p>
+                        Owner ID:
+                        ${application.ownerId}
+                    </p>
+
+                    <p>
+                        Application Date:
+                        ${application.applicationDate}
+                    </p>
+
+                    <p>
+                        Status:
+                        <strong>${application.status}</strong>
+                    </p>
+
+                `;
+
+                container.appendChild(div);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("applications").innerText =
+                "Unable to load applications.";
+
+        });
+}
+
+function goBack() {
+
+    window.location.href =
+        "owner-dashboard.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

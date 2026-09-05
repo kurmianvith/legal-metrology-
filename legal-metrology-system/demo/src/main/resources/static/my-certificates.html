@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Certificates</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8;
+    }
+
+    header {
+        background-color: #1f4e79;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .container {
+        width: 85%;
+        max-width: 1100px;
+        margin: 40px auto;
+    }
+
+    h2 {
+        color: #1f4e79;
+    }
+
+    .box {
+        background-color: white;
+        padding: 20px;
+        width: 400px;
+        max-width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #1f4e79;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #163a5c;
+    }
+
+    .certificate {
+        background-color: white;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .details h3 {
+        color: #1f4e79;
+        word-wrap: break-word;
+    }
+
+    .details p {
+        margin: 10px 0;
+        word-wrap: break-word;
+    }
+
+    .status {
+        font-weight: bold;
+    }
+
+    .qr-section {
+        text-align: center;
+        margin-left: 30px;
+        flex-shrink: 0;
+    }
+
+    .qr-section img {
+        width: 200px;
+        height: 200px;
+        max-width: 100%;
+    }
+
+    .qr-section p {
+        font-weight: bold;
+        color: #1f4e79;
+    }
+
+    #message {
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 15px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .box {
+            width: 100%;
+            padding: 20px;
+        }
+
+        input {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+        .certificate {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .details {
+            width: 100%;
+        }
+
+        .details h3 {
+            font-size: 19px;
+        }
+
+        .qr-section {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .qr-section img {
+            width: 180px;
+            height: 180px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>My Certificates</h1>
+
+<p>Legal Metrology Verification System</p>
+
+</header>
+
+<div class="container">
+
+<h2>Find My Certificates</h2>
+
+<div class="box">
+
+    <input
+        type="number"
+        id="ownerId"
+        placeholder="Enter Owner ID">
+
+    <button onclick="loadCertificates()">
+        View My Certificates
+    </button>
+
+    <p id="message"></p>
+
+</div>
+
+<div id="certificates">
+    Enter your Owner ID to view certificates.
+</div>
+
+<button onclick="goBack()">
+    Back to Owner Dashboard
+</button>
+
+</div>
+
+<script>
+
+function loadCertificates() {
+
+    const ownerId =
+        document.getElementById("ownerId").value;
+
+    if (ownerId === "") {
+
+        document.getElementById("message").innerText =
+            "Please enter Owner ID.";
+
+        return;
+    }
+
+    fetch("/certificates")
+
+        .then(response => response.json())
+
+        .then(certificates => {
+
+            const container =
+                document.getElementById("certificates");
+
+            container.innerHTML = "";
+
+            /*
+             * Certificates currently store the Application ID,
+             * not the Owner ID.
+             *
+             * So first get all applications and find the
+             * applications belonging to this owner.
+             */
+
+            return fetch("/applications")
+                .then(response => response.json())
+                .then(applications => {
+
+                    const myApplications =
+                        applications.filter(
+                            application =>
+                            application.ownerId == Number(ownerId)
+                        );
+
+                    const myApplicationIds =
+                        myApplications.map(
+                            application => application.id
+                        );
+
+                    const myCertificates =
+                        certificates.filter(
+                            certificate =>
+                            myApplicationIds.includes(
+                                certificate.applicationId
+                            )
+                        );
+
+                    if (myCertificates.length === 0) {
+
+                        container.innerHTML =
+                            "<p>No certificates found for this Owner ID.</p>";
+
+                        return;
+                    }
+
+                    myCertificates.forEach(certificate => {
+
+                        const div =
+                            document.createElement("div");
+
+                        div.className = "certificate";
+
+                        div.innerHTML = `
+
+                            <div class="details">
+
+                                <h3>
+                                    Certificate Number:
+                                    ${certificate.certificateNumber}
+                                </h3>
+
+                                <p>
+                                    Certificate ID:
+                                    ${certificate.id}
+                                </p>
+
+                                <p>
+                                    Application ID:
+                                    ${certificate.applicationId}
+                                </p>
+
+                                <p>
+                                    Instrument ID:
+                                    ${certificate.instrumentId}
+                                </p>
+
+                                <p>
+                                    Verification Date:
+                                    ${certificate.verificationDate}
+                                </p>
+
+                                <p>
+                                    Valid Until:
+                                    ${certificate.validUntil}
+                                </p>
+
+                                <p class="status">
+                                    Status:
+                                    ${certificate.status}
+                                </p>
+
+                            </div>
+
+                            <div class="qr-section">
+
+                                <p>Scan to Verify</p>
+
+                                <img
+                                    src="/certificates/qr/${certificate.certificateNumber}"
+                                    alt="Certificate QR Code">
+
+                            </div>
+
+                        `;
+
+                        container.appendChild(div);
+
+                    });
+
+                });
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("certificates").innerText =
+                "Unable to load certificates.";
+
+        });
+}
+
+function goBack() {
+
+    window.location.href =
+        "owner-dashboard.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

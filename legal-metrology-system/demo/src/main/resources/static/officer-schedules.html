@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Officer Schedules</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8;
+    }
+
+    header {
+        background-color: #1f4e79;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .container {
+        width: 85%;
+        max-width: 1000px;
+        margin: 40px auto;
+    }
+
+    h2 {
+        color: #1f4e79;
+    }
+
+    .schedule {
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .schedule h3 {
+        color: #1f4e79;
+        margin-top: 0;
+    }
+
+    .schedule p {
+        margin: 10px 0;
+        word-wrap: break-word;
+    }
+
+    button {
+        background-color: #1f4e79;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #163a5c;
+    }
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 15px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .schedule {
+            padding: 18px;
+        }
+
+        .schedule h3 {
+            font-size: 19px;
+        }
+
+        .schedule p {
+            line-height: 1.5;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Officer Schedules</h1>
+
+    <p>Legal Metrology Verification System</p>
+
+</header>
+
+<div class="container">
+
+    <h2>Verification Schedules</h2>
+
+    <div id="schedules">
+        Loading schedules...
+    </div>
+
+    <br>
+
+    <button onclick="goBack()">
+        Back to Dashboard
+    </button>
+
+</div>
+
+<script>
+
+    function loadSchedules() {
+
+        fetch("/schedules")
+
+        .then(response => response.json())
+
+        .then(schedules => {
+
+            const container =
+                document.getElementById("schedules");
+
+            container.innerHTML = "";
+
+            if (schedules.length === 0) {
+
+                container.innerHTML =
+                    "<p>No schedules found.</p>";
+
+                return;
+
+            }
+
+            schedules.forEach(schedule => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "schedule";
+
+                div.innerHTML = `
+
+                    <h3>
+                        Schedule ID:
+                        ${schedule.id}
+                    </h3>
+
+                    <p>
+                        Application ID:
+                        ${schedule.applicationId}
+                    </p>
+
+                    <p>
+                        Scheduled Date:
+                        ${schedule.scheduledDate}
+                    </p>
+
+                    <p>
+                        Scheduled Time:
+                        ${schedule.scheduledTime}
+                    </p>
+
+                    <p>
+                        Officer:
+                        ${schedule.officerName}
+                    </p>
+
+                `;
+
+                container.appendChild(div);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("schedules").innerText =
+                "Unable to load schedules.";
+
+        });
+
+    }
+
+    function goBack() {
+
+        window.location.href =
+            "officer-dashboard.html";
+
+    }
+
+    loadSchedules();
+
+</script>
+
+</body>
+
+</html>

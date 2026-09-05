@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f6f8;
+        }
+
+        header {
+            background-color: #1f4e79;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        h2 {
+            color: #1f4e79;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: white;
+            width: 220px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .card h3 {
+            color: #1f4e79;
+            margin-bottom: 10px;
+        }
+
+        .number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #163a5c;
+        }
+
+        #message {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            header p {
+                font-size: 14px;
+            }
+
+            .container {
+                width: 90%;
+                margin: 25px auto;
+            }
+
+            .cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 350px;
+            }
+
+            .buttons {
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+                padding: 13px;
+                font-size: 16px;
+                margin: 5px 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>Admin Dashboard</h1>
+
+    <p>Legal Metrology Verification System</p>
+
+</header>
+
+
+<div class="container">
+
+
+    <h2>System Overview</h2>
+
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <h3>Total Users</h3>
+
+            <div class="number" id="users">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Total Instruments</h3>
+
+            <div class="number" id="instruments">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Total Applications</h3>
+
+            <div class="number" id="applications">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Pending Applications</h3>
+
+            <div class="number" id="pending">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Approved Applications</h3>
+
+            <div class="number" id="approved">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Rejected Applications</h3>
+
+            <div class="number" id="rejected">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Total Certificates</h3>
+
+            <div class="number" id="certificates">
+                -
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>Expired Certificates</h3>
+
+            <div class="number" id="expired">
+                -
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <p id="message"></p>
+
+
+    <div class="buttons">
+
+
+        <button onclick="viewUsers()">
+            Manage Users
+        </button>
+
+
+        <button onclick="viewInstruments()">
+            Manage Instruments
+        </button>
+
+
+        <button onclick="viewApplications()">
+            Manage Applications
+        </button>
+
+
+        <button onclick="viewCertificates()">
+            Manage Certificates
+        </button>
+
+
+        <br>
+
+
+        <button onclick="goBack()">
+            Back to Home
+        </button>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+function loadDashboard() {
+
+
+    // Load Users
+
+    fetch("/users")
+
+        .then(response => response.json())
+
+        .then(users => {
+
+            document.getElementById("users").innerText =
+                users.length;
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("users").innerText =
+                "Error";
+
+        });
+
+
+    // Load Instruments
+
+    fetch("/instruments")
+
+        .then(response => response.json())
+
+        .then(instruments => {
+
+            document.getElementById("instruments").innerText =
+                instruments.length;
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("instruments").innerText =
+                "Error";
+
+        });
+
+
+    // Load Applications
+
+    fetch("/applications")
+
+        .then(response => response.json())
+
+        .then(applications => {
+
+
+            document.getElementById("applications").innerText =
+                applications.length;
+
+
+            let pendingCount = 0;
+
+            let approvedCount = 0;
+
+            let rejectedCount = 0;
+
+
+            applications.forEach(application => {
+
+
+                if (application.status === "PENDING") {
+
+                    pendingCount++;
+
+                }
+
+
+                if (application.status === "APPROVED") {
+
+                    approvedCount++;
+
+                }
+
+
+                if (application.status === "REJECTED") {
+
+                    rejectedCount++;
+
+                }
+
+
+            });
+
+
+            document.getElementById("pending").innerText =
+                pendingCount;
+
+
+            document.getElementById("approved").innerText =
+                approvedCount;
+
+
+            document.getElementById("rejected").innerText =
+                rejectedCount;
+
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("applications").innerText =
+                "Error";
+
+        });
+
+
+    // Load Certificates
+
+    fetch("/certificates")
+
+        .then(response => response.json())
+
+        .then(certificates => {
+
+
+            document.getElementById("certificates").innerText =
+                certificates.length;
+
+
+            let expiredCount = 0;
+
+            const today = new Date();
+
+
+            certificates.forEach(certificate => {
+
+
+                const validUntil =
+                    new Date(certificate.validUntil);
+
+
+                if (validUntil < today) {
+
+                    expiredCount++;
+
+                }
+
+
+            });
+
+
+            document.getElementById("expired").innerText =
+                expiredCount;
+
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("certificates").innerText =
+                "Error";
+
+        });
+
+
+}
+
+
+function viewUsers() {
+
+    window.location.href =
+        "admin-users.html";
+
+}
+
+
+function viewInstruments() {
+
+    window.location.href =
+        "admin-instruments.html";
+
+}
+
+
+function viewApplications() {
+
+    window.location.href =
+        "admin-applications.html";
+
+}
+
+
+function viewCertificates() {
+
+    window.location.href =
+        "admin-certificates.html";
+
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+loadDashboard();
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Officer Applications</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #f4f6f8;
+    }
+
+    header {
+        background-color: #1f4e79;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .container {
+        width: 85%;
+        max-width: 1000px;
+        margin: 40px auto;
+    }
+
+    h2 {
+        color: #1f4e79;
+    }
+
+    .application {
+        background-color: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .application h3 {
+        color: #1f4e79;
+        margin-top: 0;
+    }
+
+    .application p {
+        margin: 10px 0;
+        word-wrap: break-word;
+    }
+
+    .status {
+        font-weight: bold;
+    }
+
+    .risk {
+        font-weight: bold;
+        line-height: 1.8;
+    }
+
+    .low {
+        color: green;
+    }
+
+    .medium {
+        color: orange;
+    }
+
+    .high {
+        color: red;
+    }
+
+    button {
+        background-color: #1f4e79;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #163a5c;
+    }
+
+    @media (max-width: 600px) {
+
+        header {
+            padding: 15px;
+        }
+
+        header h1 {
+            font-size: 24px;
+        }
+
+        header p {
+            font-size: 14px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 25px auto;
+        }
+
+        .application {
+            padding: 18px;
+        }
+
+        .application h3 {
+            font-size: 19px;
+        }
+
+        .application p {
+            line-height: 1.5;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Officer Applications</h1>
+
+<p>Legal Metrology Verification System</p>
+
+</header>
+
+<div class="container">
+
+<h2>Verification Applications</h2>
+
+<div id="applications">
+
+    Loading applications...
+
+</div>
+
+<br>
+
+<button onclick="goBack()">
+
+    Back to Dashboard
+
+</button>
+
+</div>
+
+<script>
+
+function loadApplications() {
+
+    fetch("/applications")
+
+    .then(response => response.json())
+
+    .then(applications => {
+
+        const container =
+            document.getElementById("applications");
+
+        container.innerHTML = "";
+
+        if (applications.length === 0) {
+
+            container.innerHTML =
+                "<p>No applications found.</p>";
+
+            return;
+        }
+
+        applications.forEach(application => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "application";
+
+            div.innerHTML = `
+
+                <h3>
+                    Application ID:
+                    ${application.id}
+                </h3>
+
+                <p>
+                    Instrument ID:
+                    ${application.instrumentId}
+                </p>
+
+                <p>
+                    Owner ID:
+                    ${application.ownerId}
+                </p>
+
+                <p>
+                    Application Date:
+                    ${application.applicationDate}
+                </p>
+
+                <p class="status">
+                    Status:
+                    ${application.status}
+                </p>
+
+                <p id="risk-${application.id}" class="risk">
+                    AI Risk: Checking...
+                </p>
+
+                <button onclick="inspectApplication(${application.id})">
+                    Inspect
+                </button>
+
+            `;
+
+            container.appendChild(div);
+
+            loadRisk(application.id);
+
+        });
+
+    })
+
+    .catch(error => {
+
+        document.getElementById("applications").innerText =
+            "Unable to load applications.";
+
+    });
+
+}
+
+
+function loadRisk(applicationId) {
+
+    fetch("/ai/risk/" + applicationId)
+
+    .then(response => response.json())
+
+    .then(result => {
+
+        const riskElement =
+            document.getElementById("risk-" + applicationId);
+
+        if (result.error) {
+
+            riskElement.innerText = "AI Risk: " + result.error;
+            return;
+        }
+
+        const score =
+            (result.riskScore !== undefined) ? result.riskScore : "N/A";
+
+        const level =
+            result.riskLevel ? result.riskLevel : "UNKNOWN";
+
+        riskElement.innerHTML =
+            "AI Risk Score: " + score + "/100<br>" +
+            "AI Risk Level: " + level;
+
+        if (level === "LOW") {
+
+            riskElement.classList.add("low");
+
+        }
+
+        else if (level === "MEDIUM") {
+
+            riskElement.classList.add("medium");
+
+        }
+
+        else if (level === "HIGH") {
+
+            riskElement.classList.add("high");
+
+        }
+
+    })
+
+    .catch(error => {
+
+        const riskElement =
+            document.getElementById("risk-" + applicationId);
+
+        riskElement.innerText =
+            "AI Risk: Unable to calculate";
+
+    });
+
+}
+
+
+function inspectApplication(applicationId) {
+
+    window.location.href =
+        "officer-inspection.html?applicationId=" + applicationId;
+
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "officer-dashboard.html";
+
+}
+
+
+loadApplications();
+
+</script>
+
+</body>
+
+</html>

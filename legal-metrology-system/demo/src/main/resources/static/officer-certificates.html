@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Officer Certificates</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f6f8;
+        }
+
+        header {
+            background-color: #1f4e79;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        h2 {
+            color: #1f4e79;
+        }
+
+        .application,
+        .certificate {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .application h3,
+        .certificate h3 {
+            color: #1f4e79;
+            margin-top: 0;
+        }
+
+        .box {
+            background-color: white;
+            width: 450px;
+            max-width: 100%;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #1f4e79;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #163a5c;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 15px;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+
+            header p {
+                font-size: 14px;
+            }
+
+            .container {
+                width: 90%;
+                margin: 25px auto;
+            }
+
+            h2 {
+                font-size: 21px;
+            }
+
+            .application,
+            .certificate {
+                padding: 18px;
+            }
+
+            .application h3,
+            .certificate h3 {
+                font-size: 18px;
+                word-break: break-word;
+            }
+
+            .application p,
+            .certificate p {
+                line-height: 1.5;
+                word-break: break-word;
+            }
+
+            .box {
+                width: 100%;
+                padding: 20px;
+            }
+
+            input {
+                padding: 12px;
+                font-size: 16px;
+            }
+
+            button {
+                width: 100%;
+                padding: 13px;
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Officer Certificate Management</h1>
+
+    <p>Legal Metrology Verification System</p>
+
+</header>
+
+
+<div class="container">
+
+    <h2>Applications Ready for Certificate</h2>
+
+    <div id="applications">
+        Loading applications...
+    </div>
+
+
+    <h2>Issue Certificate</h2>
+
+    <div class="box">
+
+        <label for="applicationId">
+            Application ID
+        </label>
+
+        <input
+            type="number"
+            id="applicationId"
+            placeholder="Enter Application ID">
+
+
+        <label for="instrumentId">
+            Instrument ID
+        </label>
+
+        <input
+            type="number"
+            id="instrumentId"
+            placeholder="Enter Instrument ID">
+
+
+        <label for="certificateNumber">
+            Certificate Number
+        </label>
+
+        <input
+            type="text"
+            id="certificateNumber"
+            placeholder="Example: LM-2026-0004">
+
+
+        <label for="verificationDate">
+            Verification Date
+        </label>
+
+        <input
+            type="date"
+            id="verificationDate">
+
+
+        <label for="validUntil">
+            Valid Until
+        </label>
+
+        <input
+            type="date"
+            id="validUntil">
+
+
+        <button onclick="createCertificate()">
+            Issue Certificate
+        </button>
+
+        <p id="message"></p>
+
+    </div>
+
+
+    <h2>Issued Certificates</h2>
+
+    <div id="certificates">
+        Loading certificates...
+    </div>
+
+
+    <button onclick="goBack()">
+        Back to Officer Dashboard
+    </button>
+
+</div>
+
+
+<script>
+
+function loadApplications() {
+
+    fetch("/applications")
+
+        .then(response => response.json())
+
+        .then(applications => {
+
+            const container =
+                document.getElementById("applications");
+
+            container.innerHTML = "";
+
+
+            const readyApplications =
+                applications.filter(
+                    application =>
+                    application.status === "READY_FOR_CERTIFICATE"
+                );
+
+
+            if (readyApplications.length === 0) {
+
+                container.innerHTML =
+                    "<p>No applications are ready for certificates.</p>";
+
+                return;
+            }
+
+
+            readyApplications.forEach(application => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "application";
+
+
+                div.innerHTML = `
+
+                    <h3>
+                        Application ID:
+                        ${application.id}
+                    </h3>
+
+                    <p>
+                        Instrument ID:
+                        ${application.instrumentId}
+                    </p>
+
+                    <p>
+                        Owner ID:
+                        ${application.ownerId}
+                    </p>
+
+                    <p>
+                        Application Date:
+                        ${application.applicationDate}
+                    </p>
+
+                    <p>
+                        Status:
+                        <strong>${application.status}</strong>
+                    </p>
+
+                    <button
+                        onclick="selectApplication(
+                            ${application.id},
+                            ${application.instrumentId}
+                        )">
+
+                        Select Application
+
+                    </button>
+
+                `;
+
+
+                container.appendChild(div);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("applications").innerText =
+                "Unable to load applications.";
+
+        });
+
+}
+
+
+function selectApplication(applicationId, instrumentId) {
+
+    document.getElementById("applicationId").value =
+        applicationId;
+
+    document.getElementById("instrumentId").value =
+        instrumentId;
+
+}
+
+
+function createCertificate() {
+
+    const applicationId =
+        document.getElementById("applicationId").value;
+
+    const instrumentId =
+        document.getElementById("instrumentId").value;
+
+    const certificateNumber =
+        document.getElementById("certificateNumber").value;
+
+    const verificationDate =
+        document.getElementById("verificationDate").value;
+
+    const validUntil =
+        document.getElementById("validUntil").value;
+
+
+    if (
+        applicationId === "" ||
+        instrumentId === "" ||
+        certificateNumber === "" ||
+        verificationDate === "" ||
+        validUntil === ""
+    ) {
+
+        document.getElementById("message").innerText =
+            "Please fill all fields.";
+
+        document.getElementById("message").style.color =
+            "red";
+
+        return;
+    }
+
+
+    const certificate = {
+
+        applicationId: Number(applicationId),
+
+        instrumentId: Number(instrumentId),
+
+        certificateNumber: certificateNumber,
+
+        verificationDate: verificationDate,
+
+        validUntil: validUntil,
+
+        status: "VALID"
+
+    };
+
+
+    fetch("/certificates", {
+
+        method: "POST",
+
+        headers: {
+
+            "Content-Type": "application/json"
+
+        },
+
+        body: JSON.stringify(certificate)
+
+    })
+
+    .then(response => {
+
+        if (!response.ok) {
+
+            throw new Error("Certificate creation failed");
+
+        }
+
+        return response.json();
+
+    })
+
+    .then(data => {
+
+        document.getElementById("message").innerText =
+            "Certificate issued successfully! ID: "
+            + data.id;
+
+        document.getElementById("message").style.color =
+            "green";
+
+
+        loadApplications();
+
+        loadCertificates();
+
+    })
+
+    .catch(error => {
+
+        document.getElementById("message").innerText =
+            "Unable to create certificate.";
+
+        document.getElementById("message").style.color =
+            "red";
+
+    });
+
+}
+
+
+function loadCertificates() {
+
+    fetch("/certificates")
+
+        .then(response => response.json())
+
+        .then(certificates => {
+
+            const container =
+                document.getElementById("certificates");
+
+            container.innerHTML = "";
+
+
+            if (certificates.length === 0) {
+
+                container.innerHTML =
+                    "<p>No certificates found.</p>";
+
+                return;
+            }
+
+
+            certificates.forEach(certificate => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "certificate";
+
+
+                div.innerHTML = `
+
+                    <h3>
+                        Certificate Number:
+                        ${certificate.certificateNumber}
+                    </h3>
+
+                    <p>
+                        Application ID:
+                        ${certificate.applicationId}
+                    </p>
+
+                    <p>
+                        Instrument ID:
+                        ${certificate.instrumentId}
+                    </p>
+
+                    <p>
+                        Verification Date:
+                        ${certificate.verificationDate}
+                    </p>
+
+                    <p>
+                        Valid Until:
+                        ${certificate.validUntil}
+                    </p>
+
+                    <p>
+                        Status:
+                        <strong>${certificate.status}</strong>
+                    </p>
+
+                `;
+
+
+                container.appendChild(div);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            document.getElementById("certificates").innerText =
+                "Unable to load certificates.";
+
+        });
+
+}
+
+
+function goBack() {
+
+    window.location.href =
+        "officer-dashboard.html";
+
+}
+
+
+loadApplications();
+
+loadCertificates();
+
+</script>
+
+</body>
+
+</html>
